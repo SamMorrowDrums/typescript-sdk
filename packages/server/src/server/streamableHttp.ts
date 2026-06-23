@@ -162,7 +162,7 @@ export interface ScopeChallengeConfig {
  * Does NOT add the surrounding quotes — call sites embed the result inside `"..."`.
  */
 function quoteAuthParam(value: string): string {
-    return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return value.replaceAll('\\', '\\\\').replaceAll('"', String.raw`\"`);
 }
 
 /**
