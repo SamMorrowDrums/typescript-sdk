@@ -15,9 +15,10 @@
  *
  * Run:
  *   pnpm --filter @modelcontextprotocol/examples-server exec \
- *     tsx src/scope-challenge-keycloak.ts
+ *     tsx src/scopeChallengeKeycloak.ts
  */
 
+import type { AuthInfo, OAuthTokenVerifier } from '@modelcontextprotocol/express';
 import {
   createMcpExpressApp,
   getOAuthProtectedResourceMetadataUrl,
@@ -26,11 +27,10 @@ import {
 } from '@modelcontextprotocol/express';
 import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
 import { McpServer } from '@modelcontextprotocol/server';
-import type { AuthInfo, OAuthTokenVerifier } from '@modelcontextprotocol/express';
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
-import * as z from 'zod/v4';
+import type { JWTPayload } from 'jose';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 
-const PORT = parseInt(process.env.PORT || '3100', 10);
+const PORT = Number.parseInt(process.env.PORT || '3100', 10);
 const REALM_URL = process.env.REALM_URL || 'http://localhost:8180/realms/mcpkit-test';
 const RESOURCE_URL = new URL(`http://localhost:${PORT}/mcp`);
 
