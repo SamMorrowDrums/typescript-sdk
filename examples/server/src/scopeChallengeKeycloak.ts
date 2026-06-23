@@ -18,7 +18,7 @@
  *     tsx src/scopeChallengeKeycloak.ts
  */
 
-import type { AuthInfo, OAuthTokenVerifier } from '@modelcontextprotocol/express';
+import type { OAuthTokenVerifier } from '@modelcontextprotocol/express';
 import {
     createMcpExpressApp,
     getOAuthProtectedResourceMetadataUrl,
@@ -26,6 +26,7 @@ import {
     requireBearerAuth
 } from '@modelcontextprotocol/express';
 import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
+import type { AuthInfo } from '@modelcontextprotocol/server';
 import { McpServer } from '@modelcontextprotocol/server';
 import type { JWTPayload } from 'jose';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
@@ -54,12 +55,15 @@ const verifier = new KeycloakVerifier();
 const resourceMetadataUrl = getOAuthProtectedResourceMetadataUrl(RESOURCE_URL);
 
 const server = new McpServer({ name: 'pr1624-keycloak', version: '0.1.0' });
+// inputSchema deliberately omitted — passing `{}` resolves to the deprecated
+// ZodRawShape overload of registerTool which has no `scopes` field. Without
+// inputSchema, the non-deprecated overload accepts `scopes: ToolScopeConfig`
+// directly. The tool takes no arguments either way.
 server.registerTool(
     'admin_call',
     {
         description:
             'Requires admin-write scope. The OR-hierarchy via `accepted` lets a token with the parent `admin` scope satisfy the gate too. The 403 challenge advertises only `required` (least-privilege).',
-        inputSchema: {},
         scopes: { required: ['admin-write'], accepted: ['admin-write', 'admin'] }
     },
     async () => ({ content: [{ type: 'text' as const, text: 'admin_call: ok' }] })
