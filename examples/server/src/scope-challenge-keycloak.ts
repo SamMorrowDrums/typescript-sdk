@@ -57,9 +57,9 @@ const server = new McpServer({ name: 'pr1624-keycloak', version: '0.1.0' });
 server.registerTool(
   'admin_call',
   {
-    description: 'Requires admin-write scope. The transport returns 403 + WWW-Authenticate before this handler runs when the token lacks the scope.',
+    description: 'Requires admin-write scope. The OR-hierarchy via `accepted` lets a token with the parent `admin` scope satisfy the gate too. The 403 challenge advertises only `required` (least-privilege).',
     inputSchema: {},
-    scopes: ['admin-write'],
+    scopes: { required: ['admin-write'], accepted: ['admin-write', 'admin'] },
   },
   async () => ({ content: [{ type: 'text' as const, text: 'admin_call: ok' }] }),
 );
